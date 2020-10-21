@@ -1,12 +1,118 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:p="http://primefaces.org/ui">
-     
-    <h:head>
-    </h:head>
- 
-    <h:body>
-        <p:spinner />
-    </h:body>
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+</h:head>
+
+<h:body>
+	<p:growl id="messages" />
+	<p:growl for="email" display="icon" />
+	<h:form>
+		<p:dialog header="Login" modal="true" visible="true" resizable="false"
+			draggable="false">
+			<h:panelGrid columns="2" cellpadding="5">
+				<h:outputLabel value="E-mail: " />
+				<p:inputText size="20" value="#{loginBean.usuario.email}" />
+				<h:outputLabel value="Senha:" />
+				<p:password size="20" value="#{loginBean.usuario.senha}" />
+			</h:panelGrid>
+			<h:panelGrid columns="2" cellpadding="5">
+				<p:commandButton value="Login" action="#{loginBean.login}"
+					update=":messages" />
+				<p:commandButton value="Registrar"
+					actionListener="#{loginBean.novo}"
+					oncomplete="PF('dialogoUsuario').show()"
+					update=":formCadastroUsuario:painelCadastroUsuario 
+					:formCadastroUsuario:tabelaTelefone" />
+			</h:panelGrid>
+		</p:dialog>
+	</h:form>
+
+	<p:dialog header="Cadastro de Usuário" widgetVar="dialogoUsuario"
+		draggable="false" resizable="false" modal="true">
+		<h:form id="formCadastroUsuario">
+			<p:panelGrid columns="2" id="painelCadastroUsuario"
+				styleClass="ui-noborder" style="margin-bottom: 25px">
+				<p:outputLabel value="Nome: " />
+				<p:inputText id="nome" size="30" maxlenght="50"
+					value="#{loginBean.usuario.nome}" />
+				<p:outputLabel value="Email: " />
+				<p:inputText id="email" size="30" maxlength="50"
+					value="#{loginBean.usuario.email}" />
+				<p:outputLabel value="Senha: " />
+				<p:inputText id="senha" size="30" maxlenght="50"
+					value="#{loginBean.usuario.senha}" />
+			</p:panelGrid>
+
+			<p:panel header="Adicionar Telefones">
+
+				<p:panelGrid id="painelTelefone" columns="3"
+					styleClass="ui-noborder">
+					<p:outputLabel value="Telefone: " />
+					<p:inputMask id="ddd" maxlenght="2" style="width:40px"
+						value="#{loginBean.telefone.ddd}" mask="99" />
+					<p:inputMask id="telefone" style="width:113px"
+						value="#{loginBean.telefone.telefone}" mask="9999-9999" />
+				</p:panelGrid>
+				<p:panelGrid id="painelTipo" columns="2" styleClass="ui-noborder">
+					<p:outputLabel value="Tipo: " />
+					<p:selectOneMenu id="telefoneTipo"
+						value="#{loginBean.telefone.tipo}" style="width:135px">
+						<f:selectItem itemLabel="Residencial" itemValue="Residencial" />
+						<f:selectItem itemLabel="Celular" itemValue="Celular" />
+					</p:selectOneMenu>
+					<p:commandButton icon="pi pi-plus" value="Adicionar"
+						actionListener="#{loginBean.adicionarNovoTelefone}"
+						update=":messages :formCadastroUsuario:tabelaTelefone :formCadastroUsuario:painelTelefone" />
+				</p:panelGrid>
+
+				<p:dataTable id="tabelaTelefone"
+					emptyMessage="Nenhum registro encontrado." var="cursorTelefone"
+					value="#{loginBean.telefones}" style="width:365px;"
+					scrollable="true" scrollHeight="150" resizableColumns="true">
+
+					<p:column headerText="DDD" >
+						<h:outputText value="#{cursorTelefone.ddd}" />
+					</p:column>
+
+					<p:column headerText="Telefones">
+						<h:outputText value="#{cursorTelefone.telefone}" />
+					</p:column>
+					<p:column headerText="Tipo">
+						<h:outputText value="#{cursorTelefone.tipo}" />
+					</p:column>
+					<p:column headerText="Opções">
+						<!-- BOTAO EXCLUIR -->
+						<p:commandButton icon="pi pi-trash"
+							actionListener="#{loginBean.removerTelefone}"
+							update=":messages :formCadastroUsuario:tabelaTelefone">
+							<p:confirm header="Confirmação" message="Deseja Excluir?"
+								icon="pi pi-exclamation-triangle" />
+							<!-- CAPTURA A LINHA SELECIONADA -->
+							<f:attribute name="telefoneSelecionado" value="#{cursorTelefone}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="Button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="Não" type="Button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
+
+			<h:panelGrid columns="2">
+				<p:commandButton value="Salvar" icon="pi pi-save"
+					actionListener="#{loginBean.cadastrarNovoUsuario}"
+					oncomplete="PF('dialogoUsuario').hide()" update=":messages" />
+
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+
+</h:body>
 </html>
